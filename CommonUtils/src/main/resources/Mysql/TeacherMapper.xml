@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.springbootmybatis.springbootmybatis.dao.TeacherMapper">
+
+    <!--在当前mapper.xml中开启二级缓存-->
+    <cache/>
+
+    <select id="search" resultMap="TeacherStudent">
+        select student.name,student.id,teacher.name,teacher.id
+        from student,teacher
+        where student.tid=teacher.id and teacher.id=#{id}
+    </select>
+
+    <resultMap id="TeacherStudent" type="com.springbootmybatis.springbootmybatis.Pojo.Teacher">
+        <result property="id" column="teacher.id"/>
+        <result property="name" column="teacher.name"/>
+        <collection property="students" ofType="com.springbootmybatis.springbootmybatis.Pojo.Student">
+            <result property="id" column="student.id"/>
+            <result property="name" column="student.name"/>
+            <result property="tid" column="student.tid"/>
+        </collection>
+    </resultMap>
+
+</mapper>

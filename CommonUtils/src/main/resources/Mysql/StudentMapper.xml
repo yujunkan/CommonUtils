@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springbootmybatis.springbootmybatis.dao.StudentMapper">
+    <!--嵌套子查询完成多对一 -->
+    <select id="getStudent" resultMap="StudentTeacher">
+        select * from student;
+    </select>
+
+    <resultMap id="StudentTeacher" type="com.springbootmybatis.springbootmybatis.Pojo.Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <!--复杂的属性需要单独查询 对象：association 集合：collection  其中tid是Student表的外键，通过tid传递到
+        Teacher中的id-->
+        <association property="teacher" column="tid" javaType="com.springbootmybatis.springbootmybatis.Pojo.Teacher" select="getTeacher"/>
+    </resultMap>
+
+    <select id="getTeacher" resultType="com.springbootmybatis.springbootmybatis.Pojo.Teacher">
+        select * from teacher where id=#{id}
+    </select>
+
+    <!--联表查询完成多对一 -->
+
+    <select id="getStudent2" resultMap="StudentTeacher2">
+        select  student.id,student.name,teacher.name
+        from student,Teacher
+        where student.tid=teacher.id
+    </select>
+
+    <select id="getStudent3" resultType="com.springbootmybatis.springbootmybatis.Pojo.Student">
+        select * from student
+        <where>
+            id in
+            <foreach collection="ids" item="id" index="index" open="("
+            separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <!--property 里面永远是pojo类对的属性，column 查询出数据库的列，嵌套查询coloum指的是之前的列  -->
+    <resultMap id="StudentTeacher2" type="com.springbootmybatis.springbootmybatis.Pojo.Student">
+        <result property="id" column="student.id"/>
+        <result property="name" column="student.name"/>
+        <association property="teacher" javaType="com.springbootmybatis.springbootmybatis.Pojo.Teacher">
+            <result property="teacher.name"  column="teacher.name"/>
+        </association>
+    </resultMap>
+</mapper>
